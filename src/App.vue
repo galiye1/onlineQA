@@ -17,6 +17,14 @@ export default {
     return {
       route: '/app'
     }
+  },
+  created () {
+    window.addEventListener('beforeunload', () => {
+      localStorage.setItem('store', JSON.stringify(this.$store.state))
+    })
+    if (localStorage.getItem('store')) {
+      this.$store.replaceState(Object.assign(this.$store.state, JSON.parse(localStorage.getItem('store'))))
+    }
   }
 }
 </script>

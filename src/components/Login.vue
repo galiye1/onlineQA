@@ -28,7 +28,7 @@
           <a-input v-model="form.username" placeholder="" />
         </a-form-model-item>
         <a-form-model-item label="密码">
-          <a-input v-model="form.password" placeholder="" />
+          <a-input v-model="form.password" type="password" placeholder="" />
         </a-form-model-item>
         <a-form-model-item label="身份" prop="region">
           <a-select v-model="regisForm.region" placeholder="请选择你的身份">
@@ -51,7 +51,7 @@
       </a-form-model>
     </a-modal>
 <!--    注册界面-->
-    <a-modal v-model="this.$store.state.regisVisible" title="注册界面" :footer="null" :destroyOnClose=true @cancel="cancel">
+    <a-modal v-model="this.$store.state.regisVisible" title="注册界面" :footer="null" :destroyOnClose="true" @cancel="cancel">
       <a-form-model
         ref="ruleForm"
         :model="regisForm"
@@ -152,9 +152,13 @@ export default {
       this.$store.state.loginVisible = true
     },
     exit () {
+      localStorage.clear()
       this.$store.state.showContentVisible = true
-      this.$store.state.allComments.splice(0, this.$store.state.allComments.length)
-      this.$store.state.currentComments.splice(0, this.$store.state.currentComments.length)
+      this.$store.state.username = ''
+      this.$store.state.region = ''
+      this.$store.state.allComments = []
+      this.$store.state.currentComments = []
+      this.$store.state.searchCommentsResult = []
     },
     regis () { // 打开注册信息框
       this.$store.state.regisVisible = true
@@ -169,7 +173,7 @@ export default {
         if (res.data.err) {
           this.err = res.data.err
         } else {
-          this.$router.push('/')
+          this.$router.push({ path: '/', query: { value: 'submit' } })
           this.$store.state.showContentVisible = false
           this.$store.state.username = res.data.username
           this.$store.state.allComments = res.data.allComments
@@ -184,15 +188,26 @@ export default {
         if (valid) {
           const data = { username: this.regisForm.name, password: this.regisForm.pass, region: this.regisForm.region }
           if (data.region === 'questioner') {
-            this.$server.registerQuestioner(data)
+            this.$server.registerQuestioner(data).then((res) => {
+              if (typeof res.data.err !== 'undefined') {
+                alert(res.data.err)
+              } else {
+                alert('注册成功!')
+              }
+            })
           } else if (data.region === 'answer') {
-            this.$server.registerAnswer(data)
+            this.$server.registerAnswer(data).then((res) => {
+              if (typeof res.data.err !== 'undefined') {
+                alert(res.data.err)
+              } else {
+                alert('注册成功!')
+              }
+            })
           } else {
             alert('身份错误')
           }
           this.$store.state.regisVisible = false
-          this.$router.push('/')
-          alert('注册成功!')
+          this.$router.push({ path: '/', query: { value: 'registed' } })
         } else {
           console.log('注册失败!!')
           return false

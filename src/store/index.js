@@ -25,13 +25,31 @@ export default new Vuex.Store({
       state.visible = visible
     },
     setData (state, data) {
-      data.id = state.userId * 10000 + state.currentComments.length // 设置当前提问用户的评论id，默认从1000000开始
+      const newCurrentCommentsId = JSON.parse(JSON.stringify(state.currentComments))
+      for (let i = 0, j = newCurrentCommentsId.length; i < j; i++) {
+        newCurrentCommentsId[i] = newCurrentCommentsId[i].id
+      }
+      for (let i = state.userId * 10000; ; i++) {
+        if (!newCurrentCommentsId.includes(i)) {
+          data.id = i
+          break
+        }
+      }
       state.currentComments.unshift(data)
       state.allComments.unshift(data)
       state.newComment = data
     },
     setChildrenData (state, data) {
-      data.id = state.userId * 10000 - state.currentComments.length // 设置当前回答用户的评论id，默认从-1000000开始
+      const newCurrentCommentsId = JSON.parse(JSON.stringify(state.currentComments))
+      for (let i = 0, j = newCurrentCommentsId.length; i < j; i++) {
+        newCurrentCommentsId[i] = newCurrentCommentsId[i].id
+      }
+      for (let i = state.userId * 10000; ; i--) {
+        if (!newCurrentCommentsId.includes(i)) {
+          data.id = i
+          break
+        }
+      }
       state.currentComments.unshift(data)
       state.allComments.map((item, index) => {
         if (item.id === state.currentQuesId) {

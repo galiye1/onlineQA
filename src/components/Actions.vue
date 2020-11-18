@@ -44,16 +44,6 @@ export default {
     }
   },
   methods: {
-    // like () { // 喜欢点赞
-    //   this.likes = 1
-    //   this.dislikes = 0
-    //   this.action = 'liked'
-    // },
-    // dislike () { // 不喜欢
-    //   this.likes = 0
-    //   this.dislikes = 1
-    //   this.action = 'disliked'
-    // },
     remove (params) { // 删除
       if (!params.isOrder) { // 删除回答
         if (params.action.item.userId !== this.$store.state.userId) {
@@ -73,6 +63,7 @@ export default {
             this.$store.state.currentComments.splice(index, 1)
           }
         })
+        location.reload()
       } else { // 删除问题
         if (params.action.item.userId !== this.$store.state.userId) {
           alert('您没有删除此问题的权限')
@@ -87,6 +78,7 @@ export default {
         })
         this.$server.deleteData({ currentQuesId: this.$store.state.currentQuesId, userId: this.$store.state.userId })
         this.$store.state.allComments.splice(params.action.index, 1)
+        location.reload()
       }
     },
     reply (params) { // 回复
